@@ -105,6 +105,20 @@ function render() {
     window.requestAnimationFrame(render);
 }
 
+function setup_models(){
+    return $.getJSON('models.json', function(data){ 
+	console.log("done");
+	console.log(data);
+	for(var i=0; i<data['models'].length;i++){
+	    console.log(data['models'][i].split(".")[0])
+	    var name=data['models'][i].split(".")[0]
+	    $("#model").append("<option>"+name+"</option>")
+	    
+	}
+
+    })
+}
+
 var models = {}, curModel, loading = true;
 function loadModel(name) {
     if(!models[name]) {
@@ -163,6 +177,7 @@ function setupAnimation(name) {
 var interpolate = false, slow = false;
 
 $(document).ready(function() {
+
     var cvs = $('#cvs')[0];
     gl = cvs.getContext('webgl');
     gl.viewportWidth = cvs.width;
@@ -172,6 +187,7 @@ $(document).ready(function() {
         loadModel($('#model').val());
     });
     $('#animations').change(function() {
+	console.log("animations change");
         setupAnimation($('#animations').val());
     });
     $('#interpolate').change(function() {
@@ -180,7 +196,11 @@ $(document).ready(function() {
     $('#slow').change(function() {
         slow = this.checked;
     });
-    loadModel('orc');
+
+    // loadModel('orc');    
+    setup_models().then(function(){
+	loadModel($($("#model").find("option")[0]).val()) // load the first model
+    })
 
     setup();
     render();
